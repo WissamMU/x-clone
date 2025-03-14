@@ -1,0 +1,35 @@
+{
+  "name": "x-clone",
+  "version": "1.0.0",
+  "description": "x clone using react vite and more",
+  "main": "backend/server.js",
+  "scripts": {
+    "dev": "nodemon backend/server.js",
+    "start": "node backend/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.5.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "_dependenciesNotes": {
+    "bcryptjs": "Password hashing library for secure credential storage",
+    "cloudinary": "Cloud-based media management for image/video uploads",
+    "cookie-parser": "Middleware for handling HTTP cookies",
+    "cors": "Cross-Origin Resource Sharing middleware",
+    "dotenv": "Environment variable loader from .env files",
+    "express": "Node.js web application framework",
+    "jsonwebtoken": "JWT implementation for authentication tokens",
+    "mongoose": "MongoDB object modeling (ODM library)"
+  }
+}
