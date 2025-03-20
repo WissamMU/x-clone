@@ -6,34 +6,28 @@ export const signup = async (req, res) => {
     try {
         const { fullName, username, email, password } = req.body;
 
-        // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return res.status(400).json({ error: "Invalid email format" });
         }
 
-        // Check for existing username
-        const existingUser = await User.findOne({ username }); // Because we have the same value for name we only use username instead of username:username
+        const existingUser = await User.findOne({ username });
         if (existingUser) {
-            return res.status(400).json({ error: "Username already exists" }); // Fixed consistency
+            return res.status(400).json({ error: "Username is already taken" });
         }
 
-        // Check for existing email
         const existingEmail = await User.findOne({ email });
         if (existingEmail) {
-            return res.status(400).json({ error: "Email already exists" }); // Fixed capitalization
+            return res.status(400).json({ error: "Email is already taken" });
         }
 
         if (password.length < 6) {
             return res.status(400).json({ error: "Password must be at least 6 characters long" });
         }
 
-
-        // Password hashing
-        const salt = await bcrypt.genSalt(10); // Fixed typo: getSalt → genSalt
+        const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Create new user instance
         const newUser = new User({
             fullName,
             username,
@@ -41,29 +35,29 @@ export const signup = async (req, res) => {
             password: hashedPassword,
         });
 
-        // Save user to database FIRST
-        await newUser.save(); // Moved before token generation
+        if (newUser) {
+            generateTokenAndSetCookie(newUser._id, res);
+            await newUser.save();
 
-        // Generate JWT token after successful save
-        generateTokenAndSetCookie(newUser._id, res);
-
-        // Send response with user data (excluding sensitive information)
-        res.status(201).json({
-            _id: newUser._id,
-            fullName: newUser.fullName,
-            username: newUser.username,
-            email: newUser.email,
-            followers: newUser.followers,
-            following: newUser.following,
-            profileImg: newUser.profileImg,
-            coverImg: newUser.coverImg,
-        });
-
+            res.status(201).json({
+                _id: newUser._id,
+                fullName: newUser.fullName,
+                username: newUser.username,
+                email: newUser.email,
+                followers: newUser.followers,
+                following: newUser.following,
+                profileImg: newUser.profileImg,
+                coverImg: newUser.coverImg,
+            });
+        } else {
+            res.status(400).json({ error: "Invalid user data" });
+        }
     } catch (error) {
-        console.error("Error in signup controller:", error.message);
+        console.log("Error in signup controller", error.message);
         res.status(500).json({ error: "Internal Server Error" });
     }
-}
+};
+
 export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
